@@ -4,12 +4,6 @@ provider "dnsimple" {
   account = var.dnsimple_account
 }
 
-provider "godaddy" {
-  alias  = "godaddy"
-  key    = var.godaddy_api_key
-  secret = var.godaddy_secret
-}
-
 provider "digitalocean" {
   token = var.do_token
   alias = "digitalocean"

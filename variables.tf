@@ -35,9 +35,6 @@ variable "cluster_uuid" {
   type = string
 }
 
-variable "email" {
-  type = string
-}
 
 variable "cloud_provider" {
   type = string
@@ -67,22 +64,8 @@ variable "aws_secret_key" {
   sensitive   = true
 }
 
-variable "dns_provider" {
-  description = "DNS provider to use. Can be 'godaddy' or 'dnsimple'."
-  type        = string
-}
-
-# Variables for GoDaddy provider configuration
-variable "godaddy_api_key" {
-  description = "API key for GoDaddy provider"
-  type        = string
-  sensitive   = true
-}
-
-variable "godaddy_secret" {
-  description = "Secret key for GoDaddy provider"
-  type        = string
-  sensitive   = true
+variable "dns" {
+  type = string
 }
 
 # Variable for DNSimple provider configuration
