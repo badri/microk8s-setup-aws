@@ -27,10 +27,6 @@ variable "tld" {
   default = "shapeblockapp.com"
 }
 
-variable "sb_url" {
-  type = string
-}
-
 variable "cluster_uuid" {
   type = string
 }
