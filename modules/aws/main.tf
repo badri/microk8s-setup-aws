@@ -137,7 +137,7 @@ resource "aws_security_group_rule" "kubelet_readonly" {
 }
 
 # Ingress rule for etcd (TCP 12379)
-resource "aws_security_group_rule" "etcd" {
+resource "aws_security_group_rule" "etcd_ingress" {
   description       = "etcd"
   type              = "ingress"
   from_port         = 12379
