@@ -64,10 +64,6 @@ variable "aws_secret_key" {
   sensitive   = true
 }
 
-variable "dns" {
-  type = string
-}
-
 # Variable for DNSimple provider configuration
 variable "dnsimple_token" {
   description = "Token for DNSimple provider"
