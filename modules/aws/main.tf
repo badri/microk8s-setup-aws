@@ -33,7 +33,7 @@ resource "aws_security_group" "allow_ssh" {
   name        = "security-group-${var.ssh_key_prefix}"
   description = "Allow SSH inbound traffic"
 
-  # Existing rule for SSH (port 22)
+  # SSH access
   ingress {
     description = "SSH from anywhere"
     from_port   = 22
@@ -42,25 +42,16 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Rule for Kubernetes API server (port 16443)
+  # K3s API Server
   ingress {
-    description = "Kubernetes API server"
-    from_port   = 16443
-    to_port     = 16443
+    description = "Kubernetes API Server"
+    from_port   = 6443
+    to_port     = 6443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Rule for MicroK8s node join port (port 25000)
-  ingress {
-    description = "MicroK8s node join port"
-    from_port   = 25000
-    to_port     = 25000
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # Rule for HTTP (port 80)
+  # HTTP/HTTPS for ingress
   ingress {
     description = "HTTP traffic"
     from_port   = 80
@@ -69,7 +60,6 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Rule for HTTPS (port 443)
   ingress {
     description = "HTTPS traffic"
     from_port   = 443
@@ -78,11 +68,10 @@ resource "aws_security_group" "allow_ssh" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  # Outbound rule: Allow all outbound traffic for internet access
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1" # -1 means all protocols
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -90,6 +79,39 @@ resource "aws_security_group" "allow_ssh" {
     Name = "allow_ssh"
     From = "ShapeBlock"
   }
+}
+
+# Flannel VXLAN
+resource "aws_security_group_rule" "vxlan" {
+  description       = "Flannel VXLAN"
+  type              = "ingress"
+  from_port         = 8472
+  to_port           = 8472
+  protocol          = "udp"
+  security_group_id = aws_security_group.allow_ssh.id
+  self              = true
+}
+
+# Kubelet metrics
+resource "aws_security_group_rule" "kubelet_metrics" {
+  description       = "Kubelet metrics"
+  type              = "ingress"
+  from_port         = 10250
+  to_port           = 10250
+  protocol          = "tcp"
+  security_group_id = aws_security_group.allow_ssh.id
+  self              = true
+}
+
+# etcd (only needed for HA setup)
+resource "aws_security_group_rule" "etcd" {
+  description       = "etcd for HA"
+  type              = "ingress"
+  from_port         = 2379
+  to_port           = 2380
+  protocol          = "tcp"
+  security_group_id = aws_security_group.allow_ssh.id
+  self              = true
 }
 
 # Rule for kubelet API (port 10250) from instances within the same security group
